@@ -1,8 +1,8 @@
 from stripe import StripeClient
 from django.conf import settings
 
-from payments.models import Payment
-from payments.state_machine import PaymentStateMachine
+from apps.payments.models import Payment
+from apps.payments.state_machine import PaymentStateMachine
 
 
 class PaymentsService:

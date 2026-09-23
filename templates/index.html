@@ -14,12 +14,12 @@
     <h1>Payment Demo</h1>
 
     <p>Order: <span id="order-id">ORDER-111</span></p>
-    <p>Amount: <span id="amount">13 EUR</span></p>
+    <p>Amount: <span id="amount">15 EUR</span></p>
 
     <div id="payment-element"></div>
 
     <button id="pay-button">
-        Pay 13 EUR
+        Pay 150 EUR
     </button>
 
     <p id="payment-message"></p>
@@ -39,9 +39,9 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                merchant_id: '33333333-1111-1111-1111-111111111111',
-                external_order_id: 'ORDER-4',
-                amount: 1300,
+                merchant_id: '31231243-1111-1111-1111-111111111111',
+                external_order_id: 'ORDER-5',
+                amount: 15000,
                 currency: 'eur'
             })
         });

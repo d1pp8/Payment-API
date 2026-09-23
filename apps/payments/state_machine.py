@@ -1,17 +1,21 @@
-from payments.models import Payment
+from apps.payments.models import Payment
 
 class PaymentStateMachine:
     transitions = {
-        Payment.PaymentStatus.CREATED: Payment.PaymentStatus.PROCESSING,
-        Payment.PaymentStatus.PROCESSING: {
+        Payment.PaymentStatus.CREATED: frozenset({
+            Payment.PaymentStatus.PROCESSING
+        }),
+        Payment.PaymentStatus.PROCESSING: frozenset({
             Payment.PaymentStatus.SUCCEEDED,
             Payment.PaymentStatus.FAILED,
             Payment.PaymentStatus.CANCELLED
-        },
-        Payment.PaymentStatus.SUCCEEDED: Payment.PaymentStatus.REFUND,
+        }),
+        Payment.PaymentStatus.SUCCEEDED: frozenset({
+            Payment.PaymentStatus.REFUND
+        }),
         Payment.PaymentStatus.FAILED: set(),
         Payment.PaymentStatus.CANCELLED: set(),
-        Payment.PaymentStatus.REFUND: set()
+        Payment.PaymentStatus.REFUND: set(),
     }
 
     events = {

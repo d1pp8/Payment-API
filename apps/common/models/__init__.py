@@ -1,0 +1,1 @@
+from apps.common.models.uuid import UUIDModel

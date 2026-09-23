@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from datetime import timedelta
 from environ import Env
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -7,14 +7,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = Env()
 env.read_env(BASE_DIR/'.env')
 
-SECRET_KEY = env.str('SECRET_KEY')
+SECRET_KEY = env.str('SECRET_KEY', default='django-insecure-test-only-key')
 
-STRIPE_SECRET_KEY=env.str('STRIPE_SECRET_KEY')
-STRIPE_WEBHOOK_SECRET = env.str('STRIPE_WEBHOOK_SECRET')
+STRIPE_SECRET_KEY=env.str('STRIPE_SECRET_KEY', default='sk_test_dummy')
+STRIPE_WEBHOOK_SECRET = env.str('STRIPE_WEBHOOK_SECRET', default='whsec_dummy')
 
-DEBUG = env.bool('DEBUG')
+DEBUG = env.bool('DEBUG',  default=False)
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -24,7 +24,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'payments',
+    'rest_framework_simplejwt',
+    'pytest',
+
+    'apps.payments',
+    'apps.users',
+    'apps.common',
+
 ]
 
 MIDDLEWARE = [
@@ -77,6 +83,9 @@ else:
         }
     }
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -91,6 +100,35 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    # 'DEFAULT_PAGINATION_CLASS': 'apps.common.pagination.DefaultPagination',
+    # 'PAGE_SIZE': 25,
+    'DEFAULT_THROTTLE_CLASSES': [
+            'rest_framework.throttling.UserRateThrottle',
+            'rest_framework.throttling.AnonRateThrottle',
+        ],
+        'DEFAULT_THROTTLE_RATES': {
+            'user': '300/hour',
+            'anon': '20/min',
+        },
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer', ),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'SIGNING_KEY': SECRET_KEY,
+}
+
+
 
 LANGUAGE_CODE = 'en-us'
 

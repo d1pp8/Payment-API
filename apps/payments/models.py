@@ -1,7 +1,9 @@
 from django.db import models
-import uuid
+from django.conf import settings
+from apps.common.models import UUIDModel
 
-class Payment(models.Model):
+
+class Payment(UUIDModel):
     class PaymentStatus(models.TextChoices):
         CREATED = 'created', 'Created'
         PROCESSING = 'processing', 'Processing'
@@ -10,13 +12,11 @@ class Payment(models.Model):
         CANCELLED = 'cancelled', 'Cancelled'
         REFUND = 'refund', 'Refund'
 
-
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
+    merchant = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='payments',
     )
-    merchant_id = models.UUIDField()
     external_order_id = models.CharField(max_length=255)
     amount = models.PositiveBigIntegerField()
     currency = models.CharField(max_length=3)
@@ -42,4 +42,4 @@ class Payment(models.Model):
         ordering = ['-created_at',]
 
     def __str__(self):
-        return f'{self.id}: {self.merchant_id} -> {self.external_order_id}'
+        return f'{self.uuid}: {self.merchant} -> {self.external_order_id}'

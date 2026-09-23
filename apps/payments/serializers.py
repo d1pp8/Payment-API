@@ -1,20 +1,28 @@
 from rest_framework import serializers
-from .models import Payment
+from apps.payments.models import Payment
 
-class PaymentListCreateSerializer(serializers.ModelSerializer):
+class PaymentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = [
-            'id',
-            'merchant_id',
+            'merchant',
             'external_order_id',
             'amount',
             'currency',
+        ]
+        read_only_field = [
+            'uuid',
             'status',
             'stripe_payment_intent_id',
             'created_at',
             'updated_at'
         ]
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
+
 
 class PaymentCreateResponseSerializer(serializers.Serializer):
     payment_id = serializers.UUIDField()

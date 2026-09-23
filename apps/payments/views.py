@@ -10,19 +10,26 @@ from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404,render
 
-from .serializers import PaymentListCreateSerializer, PaymentCreateResponseSerializer
-from .models import Payment
-from .services import PaymentsService
+from apps.payments.serializers import (
+    PaymentSerializer,
+    PaymentCreateSerializer,
+    PaymentCreateResponseSerializer
+)
+
+from apps.payments.models import Payment
+from apps.payments.services import PaymentsService
 
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework import permissions
 
 
 
 class PaymentViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.AllowAny]
 
     def create(self, request):
-        serializer = PaymentListCreateSerializer(data=request.data)
+        serializer = PaymentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payment = serializer.save()
 
@@ -44,13 +51,13 @@ class PaymentViewSet(viewsets.ViewSet):
 
     def list(self, request):
         queryset = Payment.objects.all()
-        serializer = PaymentListCreateSerializer(queryset, many=True)
+        serializer = PaymentSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         queryset = Payment.objects.all()
         payment = get_object_or_404(queryset, pk=pk)
-        serializer = PaymentListCreateSerializer(payment)
+        serializer = PaymentSerializer(payment)
 
         return Response(serializer.data)
 
